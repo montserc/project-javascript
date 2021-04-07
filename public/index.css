@@ -1,14 +1,29 @@
-#img {
-  display: block;
-  margin: auto;
-  height: 128px;
-  width: 128px;
-  padding: 2rem;
+body {
+  margin: 2rem;
 }
-
-#canvas {
-  display: block;
-  margin: 2rem auto;
-  width: 540px;
-  height: 540px;
+div.card {
+  width: 4rem;
+  height: 6rem;
+  display: inline-flex;
+  justify-content: center;
+  border: 1px solid grey;
+  margin: 0 .5rem .5rem 0;
+  padding: .25rem;
+}
+form {
+  margin: 0 .5rem .5rem 0;  
+}
+div.players {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+div.player {
+  height: 8rem;
+  border: 1px solid red;
+  margin: 0 .5rem .5rem 0;
+  padding: .25rem;
+}
+div.player > button {
+  margin: 0rem .25rem;
 }
