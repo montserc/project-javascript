@@ -14,6 +14,9 @@ class Card {
   toString() {
     return `Soy la carta ${this.number} de ${this.suit}`
   }
+  toImg() {
+    return `/dist/img/${this.number}${this.suit}.jpg`
+  }
 }
 
 class Player {
@@ -54,11 +57,16 @@ function renderDeck() {
   let divDeck = document.getElementById('deck');  
   divDeck.textContent = ''; 
   deck.forEach((card) => {
-    let divCard = document.createElement('div');
-    divCard.classList.add('card');
-    divCard.textContent = card.toString();
-    divCard.style.borderColor = card.color;
-    divDeck.append(divCard);
+    //let divCard = document.createElement('div');
+    //divCard.classList.add('card');
+    //divCard.textContent = card.toString();
+    //divCard.style.borderColor = card.color;
+    //divDeck.append(divCard);
+
+    let imgCard = document.createElement('img');    
+    imgCard.src = card.toImg();
+    imgCard.classList.add('card');        
+    divDeck.append(imgCard);
   });    
 }
 
@@ -107,11 +115,16 @@ function renderInitPlayers() {
 function renderPlayer (player) {
   let divPlayerCards = document.getElementById(player.name).lastChild;
   divPlayerCards.textContent = ''; 
-  player.cards.forEach((card) => {
-    let divCard = document.createElement('div');
-    divCard.classList.add('card');
-    divCard.textContent = card.toString();
-    divPlayerCards.append(divCard);
+  player.cards.forEach((card) => {    
+    //let divCard = document.createElement('div');
+    //divCard.classList.add('card');
+    //divCard.textContent = card.toString();
+    //divPlayerCards.append(divCard);
+
+    let imgCard = document.createElement('img');    
+    imgCard.src = card.toImg();
+    imgCard.classList.add('card');        
+    divPlayerCards.append(imgCard);
   });
 }
 

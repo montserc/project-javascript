@@ -12,12 +12,12 @@ section#deck, div.player > div {
   align-items: stretch;
   /*border: 1px solid blue;*/
 }
-div.card {
+img.card {
   width: 4rem;
   height: 6rem;
-  border: 1px solid grey;
+  /*border: 1px solid grey;*/
   margin: 0 .5rem .5rem 0;
-  padding: .25rem;
+  /*padding: .25rem;*/
 }
 section#players {
   display: flex;
