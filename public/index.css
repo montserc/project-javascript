@@ -2,22 +2,31 @@ body {
   margin: 2rem;
 }
 section {
-  margin: 0 .5rem .5rem 0;  
+  margin: 0 0 .5rem 0;  
 }
-section#deck, div.player > div {
+section#deck { 
+  /*
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   flex-wrap: wrap;
   align-items: stretch;
-  /*border: 1px solid blue;*/
+  */
+  position: relative;
+  /*border: 1px solid blue; */
+  min-height: 6.5rem;
 }
 img.card {
   width: 4rem;
   height: 6rem;
   /*border: 1px solid grey;*/
-  margin: 0 .5rem .5rem 0;
+  /*margin: 0 .5rem .5rem 0;*/
+  margin: .25rem;
   /*padding: .25rem;*/
+}
+
+section#deck > img.card { 
+  position: absolute; 
 }
 section#players {
   display: flex;
@@ -29,9 +38,19 @@ section#players {
 }
 div.player {
   min-height: 8rem;
-  margin: 0 .5rem .5rem 0;
-  padding: .25rem;
+  margin: 0 0 .5rem 0;
 }
 div.player > button {
   margin: 0rem 0rem 0.5rem .25rem;
+}
+div.player > div { 
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: stretch;
+  min-height: 6.5rem;  
+  border: 1px solid green;
+  /*background-image: url(/dist/img/tapete.jpg);
+  background-position: center;*/
 }

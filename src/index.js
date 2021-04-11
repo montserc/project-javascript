@@ -1,32 +1,40 @@
 //Modelo
 const suits7yM = ['Oros', 'Copas', 'Espadas', 'Bastos'];
-const suits7yMColors = ['goldenrod', 'red', 'blue', 'green'];
 const numbers7yM =[1, 2, 3, 4, 5, 6, 7, 10, 11, 12];
 const values7yM =[1, 2, 3, 4, 5, 6, 7, 0.5, 0.5, 0.5];
 
 class Card {
-  constructor(number, suit, color, value) {
+  constructor(number, suit, value) {
     this.number = number;
     this.suit = suit;
-    this.color = color;
     this.value = value;
+    this.faceDown = true;
   }  
   toString() {
-    return `Soy la carta ${this.number} de ${this.suit}`
+    return `Carta ${this.number} de ${this.suit}`;
+  }
+  toImgFront() {
+    return `/dist/img/${this.number}${this.suit}.jpg`;
+  }
+  toImgBack() {
+    return `/dist/img/back.jpg`;
   }
   toImg() {
-    return `/dist/img/${this.number}${this.suit}.jpg`
+    return (this.faceDown == true ? `/dist/img/back.jpg` : `/dist/img/${this.number}${this.suit}.jpg`);
   }
 }
 
 class Player {
-  constructor(name, score, cards) {
+  constructor(name, playing) {
     this.name = name;
-    this.score = score;
-    this.cards = cards;
+    this.playing = playing;   
+    this.cards = new Array();
   }
   toString() {
-    return `Soy el jugador ${this.name}`
+    return `Jugador ${this.name}`;
+  }
+  score() {
+    return this.cards.reduce((sum, card) => sum + card.value, 0);
   }
 }
 
@@ -36,97 +44,123 @@ Array.prototype.shuffle = function() {
       let j = Math.floor(i * Math.random());
       let tmp = this[j];
       this[j] = this[i];
-      this[i] = tmp;
+      this[i] = tmp;      
   }
   return this;
 }
 
 let deck;
-document.addEventListener('DOMContentLoaded',function() {
-  deck = new Array(); 
+let players;
+document.addEventListener('DOMContentLoaded',function() {  
+  deck = new Array();
+  players = new Array();
+  //initDeck();  
+  //renderDeck();  
+});
+
+function initDeck() {     
+  deck.length = 0;
   suits7yM.map((suit, suitIndex) => {
     for (let i = 0; i < numbers7yM.length; i++) {
-      deck.push(new Card(numbers7yM[i], suit, suits7yMColors[suitIndex], values7yM[i]));
+      deck.push(new Card(numbers7yM[i], suit, values7yM[i]));
     }
   });
   deck.shuffle();
-  renderDeck();
-});
+}
 
 function renderDeck() {
-  let divDeck = document.getElementById('deck');  
-  divDeck.textContent = ''; 
-  deck.forEach((card) => {
-    //let divCard = document.createElement('div');
-    //divCard.classList.add('card');
-    //divCard.textContent = card.toString();
-    //divCard.style.borderColor = card.color;
-    //divDeck.append(divCard);
-
+  let boxDeck = document.getElementById('deck');  
+  boxDeck.textContent = ''; 
+  deck.forEach((card, index) => {
     let imgCard = document.createElement('img');    
     imgCard.src = card.toImg();
-    imgCard.classList.add('card');        
-    divDeck.append(imgCard);
+    imgCard.classList.add('card'); 
+    imgCard.style.transform = `translateX(${index*20}px)`;
+    boxDeck.append(imgCard);
   });    
 }
 
-let players;
 document.getElementById('init').addEventListener('click', function (event) {
+  initDeck();
+  renderDeck();
   const input = document.getElementById('num-of-players');
   const numOfPlayers = input.value;
   // comprobar si la partida ja està inciada
   if (numOfPlayers.trim()) {
-    players = new Array(); 
+    players.length = 0;
     for (let i = 0; i < numOfPlayers; i++) {
-      players.push(new Player(`${i+1}`,0,new Array()));
+      players.push(new Player(`${i+1}`,(i == 0 ? true : false)));
     }
     console.table(players);
     input.value = '';
-    renderInitPlayers();
+    renderPlayers();
   }
 });
 
-function renderInitPlayers() {  
-  let divPlayers = document.getElementById('players');  
-  players.forEach((player) => {
-    let divPlayer = document.createElement('div');
-    divPlayer.classList.add('player');
-    divPlayer.setAttribute('id', player.name);
-    divPlayer.textContent = player.toString();      
-    divPlayers.append(divPlayer);
-    let buttonAskCard = document.createElement('button');
-    buttonAskCard.innerHTML = 'Pedir Carta';
-    buttonAskCard.addEventListener('click', function (event) {
+function renderPlayers() {  
+  let boxPlayers = document.getElementById('players');  
+  boxPlayers.textContent = '';
+  players.forEach((player, index) => {
+    let boxPlayer = document.createElement('div');
+    boxPlayer.classList.add('player');
+    boxPlayer.setAttribute('id', player.name);
+    boxPlayer.textContent = player.toString();      
+    boxPlayers.append(boxPlayer);
+    let buttonDrawCard = document.createElement('button');
+    buttonDrawCard.innerHTML = 'Pedir Carta';
+    buttonDrawCard.addEventListener('click', function (event) {
         event.preventDefault;
-        let card = deck.pop();
-        player.cards.push(card);
-        renderDeck();
-        renderPlayer(player);
+        drawCard(player);
     });
-    divPlayer.append(buttonAskCard);
-    let buttonStop = document.createElement('button');
-    buttonStop.innerHTML = 'Me planto';
-    buttonStop.addEventListener('click', stopPlaying(player));
-    divPlayer.append(buttonStop);
-    divPlayer.append(document.createElement('div'));
+    buttonDrawCard.disabled = !player.playing;
+    boxPlayer.append(buttonDrawCard);
+    let buttonStopDrawCard = document.createElement('button');
+    buttonStopDrawCard.innerHTML = 'Me planto';
+    buttonStopDrawCard.addEventListener('click', function (event) {
+      event.preventDefault;
+      stopDrawCard(player, index);
+    });
+    buttonStopDrawCard.disabled = !player.playing;
+    boxPlayer.append(buttonStopDrawCard);
+    boxPlayer.append(document.createElement('div'));
+    renderPlayerCards(player);
   });   
 }
 
-function renderPlayer (player) {
-  let divPlayerCards = document.getElementById(player.name).lastChild;
-  divPlayerCards.textContent = ''; 
-  player.cards.forEach((card) => {    
-    //let divCard = document.createElement('div');
-    //divCard.classList.add('card');
-    //divCard.textContent = card.toString();
-    //divPlayerCards.append(divCard);
-
-    let imgCard = document.createElement('img');    
-    imgCard.src = card.toImg();
-    imgCard.classList.add('card');        
-    divPlayerCards.append(imgCard);
-  });
+function drawCard(player) {
+  let card = deck.pop();
+  card.faceDown = !player.cards.some(playerCard => playerCard.faceDown == true);
+  player.cards.push(card);
+  renderDeck();
+  renderPlayerCards(player);
 }
 
-function stopPlaying (event, player) {
+function stopDrawCard(CurrentPlayer, iCurrentPlayer) { 
+  let iNextPlayer = iCurrentPlayer + 1;
+  if (iNextPlayer < players.length) {
+    players[iNextPlayer].playing = true;  
+  }
+  players[iCurrentPlayer].playing = false;
+  renderPlayers();
+}
+
+function renderPlayerCards (player) {  
+  let boxPlayerCards = document.getElementById(player.name).lastChild;
+  boxPlayerCards.textContent = ''; 
+  player.cards.forEach((card, iCard) => {    
+    let imgCard = document.createElement('img');
+    imgCard.addEventListener('click', function(event) {
+      //una carta anterior solo se puede descubrir
+      if (iCard == (player.cards.length-1)) {
+        card.faceDown = !player.cards.some(playerCard => playerCard.faceDown == true);
+      } else {
+        card.faceDown = false;
+      }
+      //card.faceDown = !card.faceDown;
+      imgCard.src = card.toImg();
+    });
+    imgCard.src = card.toImg();
+    imgCard.classList.add('card');        
+    boxPlayerCards.append(imgCard);
+  });
 }
