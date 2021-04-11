@@ -54,3 +54,8 @@ div.player > div {
   /*background-image: url(/dist/img/tapete.jpg);
   background-position: center;*/
 }
+div.player > span { 
+  margin: 0rem 0rem 0.5rem .25rem;
+  font-size: bold;
+  color: red;
+}

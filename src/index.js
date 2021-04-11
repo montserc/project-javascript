@@ -54,8 +54,6 @@ let players;
 document.addEventListener('DOMContentLoaded',function() {  
   deck = new Array();
   players = new Array();
-  //initDeck();  
-  //renderDeck();  
 });
 
 function initDeck() {     
@@ -68,20 +66,8 @@ function initDeck() {
   deck.shuffle();
 }
 
-function renderDeck() {
-  let boxDeck = document.getElementById('deck');  
-  boxDeck.textContent = ''; 
-  deck.forEach((card, index) => {
-    let imgCard = document.createElement('img');    
-    imgCard.src = card.toImg();
-    imgCard.classList.add('card'); 
-    imgCard.style.transform = `translateX(${index*20}px)`;
-    boxDeck.append(imgCard);
-  });    
-}
-
 document.getElementById('init').addEventListener('click', function (event) {
-  initDeck();
+  initDeck();  
   renderDeck();
   const input = document.getElementById('num-of-players');
   const numOfPlayers = input.value;
@@ -97,6 +83,18 @@ document.getElementById('init').addEventListener('click', function (event) {
   }
 });
 
+function renderDeck() {
+  let boxDeck = document.getElementById('deck');  
+  boxDeck.textContent = ''; 
+  deck.forEach((card, index) => {
+    let imgCard = document.createElement('img');    
+    imgCard.src = card.toImg();
+    imgCard.classList.add('card'); 
+    imgCard.style.transform = `translateX(${index*20}px)`;
+    boxDeck.append(imgCard);
+  });    
+}
+
 function renderPlayers() {  
   let boxPlayers = document.getElementById('players');  
   boxPlayers.textContent = '';
@@ -110,7 +108,7 @@ function renderPlayers() {
     buttonDrawCard.innerHTML = 'Pedir Carta';
     buttonDrawCard.addEventListener('click', function (event) {
         event.preventDefault;
-        drawCard(player);
+        drawCard(player, index);
     });
     buttonDrawCard.disabled = !player.playing;
     boxPlayer.append(buttonDrawCard);
@@ -122,26 +120,45 @@ function renderPlayers() {
     });
     buttonStopDrawCard.disabled = !player.playing;
     boxPlayer.append(buttonStopDrawCard);
-    boxPlayer.append(document.createElement('div'));
-    renderPlayerCards(player);
-  });   
+    boxPlayer.append(document.createElement('span')); //boxScore
+    boxPlayer.append(document.createElement('div'));  //boxCards  
+    });   
 }
 
-function drawCard(player) {
+function drawCard(player, index) {
   let card = deck.pop();
   card.faceDown = !player.cards.some(playerCard => playerCard.faceDown == true);
   player.cards.push(card);
-  renderDeck();
-  renderPlayerCards(player);
+  if (player.score() > 7.5) {
+    stopDrawCard(player, index);
+  } else {
+    renderDeck();    
+    renderPlayer(player);  
+  }
 }
 
 function stopDrawCard(CurrentPlayer, iCurrentPlayer) { 
   let iNextPlayer = iCurrentPlayer + 1;
   if (iNextPlayer < players.length) {
     players[iNextPlayer].playing = true;  
+    renderPlayer(players[iNextPlayer],iNextPlayer);
+  } else {
+    //ultim en jugar. Comprovar resultat.
   }
   players[iCurrentPlayer].playing = false;
-  renderPlayers();
+  renderPlayer(players[iCurrentPlayer],iCurrentPlayer);
+}
+
+function renderPlayer(player, index){
+  let boxPlayer = document.getElementById(player.name);
+  Object.values(boxPlayer.getElementsByTagName('button')).forEach((button) =>
+    button.disabled = !player.playing
+  );
+  let score = player.score();
+  if (score > 7.5) {      
+    boxPlayer.getElementsByTagName('span')[0].innerHTML = `&#9760; Estás fuera del juego ${score}`;
+  }
+  renderPlayerCards(player);  
 }
 
 function renderPlayerCards (player) {  
@@ -150,13 +167,11 @@ function renderPlayerCards (player) {
   player.cards.forEach((card, iCard) => {    
     let imgCard = document.createElement('img');
     imgCard.addEventListener('click', function(event) {
-      //una carta anterior solo se puede descubrir
       if (iCard == (player.cards.length-1)) {
         card.faceDown = !player.cards.some(playerCard => playerCard.faceDown == true);
       } else {
         card.faceDown = false;
       }
-      //card.faceDown = !card.faceDown;
       imgCard.src = card.toImg();
     });
     imgCard.src = card.toImg();
