@@ -3,40 +3,10 @@ const suits7yM = ['Oros', 'Copas', 'Espadas', 'Bastos'];
 const numbers7yM =[1, 2, 3, 4, 5, 6, 7, 10, 11, 12];
 const values7yM =[1, 2, 3, 4, 5, 6, 7, 0.5, 0.5, 0.5];
 
-class Card {
-  constructor(number, suit, value) {
-    this.number = number;
-    this.suit = suit;
-    this.value = value;
-    this.faceDown = true;
-  }  
-  toString() {
-    return `Carta ${this.number} de ${this.suit}`;
-  }
-  toImgFront() {
-    return `/dist/img/${this.number}${this.suit}.jpg`;
-  }
-  toImgBack() {
-    return `/dist/img/back.jpg`;
-  }
-  toImg() {
-    return (this.faceDown == true ? `/dist/img/back.jpg` : `/dist/img/${this.number}${this.suit}.jpg`);
-  }
-}
-
-class Player {
-  constructor(name, playing) {
-    this.name = name;
-    this.playing = playing;   
-    this.cards = new Array();
-  }
-  toString() {
-    return `Jugador ${this.name}`;
-  }
-  score() {
-    return this.cards.reduce((sum, card) => sum + card.value, 0);
-  }
-}
+import { 
+  Card,
+  Player 
+} from './classes';
 
 /* Aleatoriza un array según el algoritmo de Fisher-Yates */
 Array.prototype.shuffle = function() {
@@ -68,19 +38,23 @@ function initDeck() {
 
 document.getElementById('init').addEventListener('click', function (event) {
   initDeck();  
-  renderDeck();
   const input = document.getElementById('num-of-players');
   const numOfPlayers = input.value;
+  let card;
   // comprobar si la partida ja està inciada
   if (numOfPlayers.trim()) {
     players.length = 0;
     for (let i = 0; i < numOfPlayers; i++) {
       players.push(new Player(`${i+1}`,(i == 0 ? true : false)));
+      card = deck.pop();
+      card.faceDown = !players[i].cards.some(playerCard => playerCard.faceDown == true);
+      players[i].cards.push(card);
     }
-    console.table(players);
+    //console.table(players);
     input.value = '';
-    renderPlayers();
+    renderPlayers();    
   }
+  renderDeck();
 });
 
 function renderDeck() {
@@ -122,7 +96,8 @@ function renderPlayers() {
     boxPlayer.append(buttonStopDrawCard);
     boxPlayer.append(document.createElement('span')); //boxScore
     boxPlayer.append(document.createElement('div'));  //boxCards  
-    });   
+    renderPlayerCards(player);
+  });       
 }
 
 function drawCard(player, index) {
@@ -130,6 +105,7 @@ function drawCard(player, index) {
   card.faceDown = !player.cards.some(playerCard => playerCard.faceDown == true);
   player.cards.push(card);
   if (player.score() > 7.5) {
+    player.cards.forEach(card => card.faceDown=false);
     stopDrawCard(player, index);
   } else {
     renderDeck();    
