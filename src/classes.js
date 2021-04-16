@@ -22,12 +22,15 @@ export class Card {
 export class Player {
   constructor(name, playing) {
     this.name = name;
-    this.playing = playing;   
+    this.playing = playing;       
     this.cards = new Array();
+    this.winningHands = 0;   
   }
+  /*
   toString() {
-    return `Jugador ${this.name}`;
+    return (`${this.name}`);
   }
+  */
   score() {
     return this.cards.reduce((sum, card) => sum + card.value, 0);
   }

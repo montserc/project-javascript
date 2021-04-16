@@ -1,10 +1,25 @@
+body, button {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  /*margin: 2rem;*/
+}
 body {
   margin: 2rem;
+} 
+main {
+  width: 850px;
 }
-section {
-  margin: 0 0 .5rem 0;  
+button, input {
+  font-size: medium;
+  margin: .075rem;
+}
+section#controls > div { /*es per les regles*/
+  padding: .2rem .5rem;
+  margin: .4rem 0;
+  border: 1px solid #0072CE;  
 }
 section#deck { 
+  position: relative;
+  min-height: 6.5rem;
   /*
   display: flex;
   flex-direction: row;
@@ -12,10 +27,9 @@ section#deck {
   flex-wrap: wrap;
   align-items: stretch;
   */
-  position: relative;
-  /*border: 1px solid blue; */
-  min-height: 6.5rem;
+  border: 1px solid blue;
 }
+  
 img.card {
   width: 4rem;
   height: 6rem;
@@ -34,14 +48,15 @@ section#players {
   justify-content: flex-start;
   flex-wrap: wrap;
   align-items: stretch;
-  /*border: 1px solid red;*/
+  border: 1px solid red;
 }
 div.player {
   min-height: 8rem;
-  margin: 0 0 .5rem 0;
+  margin: .5rem 0;
+  padding: .1rem 0;
 }
 div.player > button {
-  margin: 0rem 0rem 0.5rem .25rem;
+  margin: 0rem 0rem .5rem .5rem;
 }
 div.player > div { 
   display: flex;
@@ -51,11 +66,16 @@ div.player > div {
   align-items: stretch;
   min-height: 6.5rem;  
   border: 1px solid green;
-  /*background-image: url(/dist/img/tapete.jpg);
-  background-position: center;*/
+  background-image: url(/dist/img/tapete.jpg);
+  background-position: center;
 }
 div.player > span { 
-  margin: 0rem 0rem 0.5rem .25rem;
+  margin: 0rem 0rem .5rem .5rem;
   font-size: bold;
   color: red;
+}
+div.player > label { 
+  float: right;
+  margin: 0rem 0rem .5rem .5rem;
+  font-size: bold;
 }
