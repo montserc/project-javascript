@@ -25,6 +25,7 @@ let players;
 document.addEventListener('DOMContentLoaded',function() {  
   deck = new Array();
   players = new Array();
+  document.getElementById('new-hand').disabled = true;
 });
 
 function initDeck() {     
@@ -38,34 +39,48 @@ function initDeck() {
 }
 
 document.getElementById('init').addEventListener('click', function (event) {
-  initDeck();  
   const input = document.getElementById('num-of-players');
   const numOfPlayers = input.value;
   let card;
-  // comprobar si la partida ja està inciada
   if (numOfPlayers.trim()) {
+    initDeck();  
     players.length = 0;
     for (let i = 0; i < numOfPlayers; i++) {
-      players.push(new Player((i == numOfPlayers-1 ? 'La Banca' : `Jugador ${i+1}`), (i == 0 ? true : false)));
+      //players.push(new Player((i == numOfPlayers-1 ? 'La Banca' : `Jugador ${i+1}`), (i == 0 ? true : false)));
+      players.push(new Player(i+1, (i == 0 ? true : false)));
       card = deck.pop();
       card.faceDown = !players[i].cards.some(playerCard => playerCard.faceDown == true);
       players[i].cards.push(card);
     }
-    //console.table(players);
     input.value = '';
+    renderDeck();    
     renderPlayers();    
   }
+});
+
+document.getElementById('new-hand').addEventListener('click', function (event) {
+  initDeck();    
+  let card;
+  for (let i = 0; i < players.length; i++) {
+    players[i].playing = (i == 0 ? true : false);
+    players[i].cards.length = 0;
+    card = deck.pop();
+    card.faceDown = !players[i].cards.some(playerCard => playerCard.faceDown == true);
+    players[i].cards.push(card);
+    renderPlayer(players[i]);
+  }
   renderDeck();
+  document.getElementById('new-hand').disabled = true;
 });
 
 function renderDeck() {
-  let boxDeck = document.getElementById('deck');  
+  const boxDeck = document.getElementById('deck');  
   boxDeck.textContent = ''; 
   deck.forEach((card, index) => {
     let imgCard = document.createElement('img');    
     imgCard.src = card.toImg();
     imgCard.classList.add('card'); 
-    imgCard.style.transform = `translateX(${index*20}px)`;
+    imgCard.style.transform = `translateX(${index*1.2}rem)`;
     boxDeck.append(imgCard);
   });    
 }
@@ -76,30 +91,32 @@ function renderPlayers() {
   players.forEach((player, index) => {
     const boxPlayer = document.createElement('div');
     boxPlayer.classList.add('player');
-    boxPlayer.setAttribute('id', player.name);
-    //boxPlayer.textContent = player.toString();      
-    boxPlayer.textContent = player.name;      
+    boxPlayer.setAttribute('id', player.identifier);
+    boxPlayer.textContent = player.toString();          
     boxPlayers.append(boxPlayer);
     const buttonDrawCard = document.createElement('button');
     buttonDrawCard.innerHTML = 'Pedir Carta';
+    //buttonDrawCard.addEventListener('click', drawCard(player, index));    
     buttonDrawCard.addEventListener('click', function (event) {
-        event.preventDefault;
         drawCard(player, index);
-    });
+    });    
     buttonDrawCard.disabled = !player.playing;
     boxPlayer.append(buttonDrawCard);
     const buttonStopDrawCard = document.createElement('button');
     buttonStopDrawCard.innerHTML = 'Me planto';
+    //buttonStopDrawCard.addEventListener('click', stopDrawCard(player, index));        
     buttonStopDrawCard.addEventListener('click', function (event) {
-      event.preventDefault;
       stopDrawCard(player, index);
     });
     buttonStopDrawCard.disabled = !player.playing;
     boxPlayer.append(buttonStopDrawCard);
-    boxPlayer.append(document.createElement('span')); //boxMsgOut
-    const inputScoreboard = document.createElement('input'); //boxScore
-    inputScoreboard.setAttribute('id', `score${player.name}`);
+    const spanResult = document.createElement('span'); 
+    spanResult.setAttribute('id', `result${player.identifier}`);
+    boxPlayer.append(spanResult);
+    const inputScoreboard = document.createElement('input'); 
+    inputScoreboard.setAttribute('id', `score${player.identifier}`);
     inputScoreboard.setAttribute('type', 'text');
+    inputScoreboard.setAttribute('size', '3');
     const labelScoreboard = document.createElement('label');
     labelScoreboard.textContent = 'Marcador: ';
     labelScoreboard.append(inputScoreboard);    
@@ -109,7 +126,7 @@ function renderPlayers() {
   });       
 }
 
-function drawCard(player, index) {
+function drawCard (player, index) {
   let card = deck.pop();
   card.faceDown = !player.cards.some(playerCard => playerCard.faceDown == true);
   player.cards.push(card);
@@ -122,22 +139,21 @@ function drawCard(player, index) {
   }
 }
 
-function stopDrawCard(CurrentPlayer, iCurrentPlayer) { 
+function stopDrawCard (currentPlayer, iCurrentPlayer) { 
   let iNextPlayer = iCurrentPlayer + 1;
+  currentPlayer.playing = false;
+  renderPlayer(currentPlayer);
   if (iNextPlayer < players.length) {
     players[iNextPlayer].playing = true;  
-    renderPlayer(players[iNextPlayer],iNextPlayer);
-  } else {
-    //ultim en jugar. Comprovar resultat.
-    players.filter((player) => player.score() == winningScore()).forEach((player) => player.winningHands += 1); 
-    console.table(players);
-    renderScoreBoards();
+    renderPlayer(players[iNextPlayer]);
+  } else { 
+    let kingScore = winningScore();
+    players.filter((player) => player.score() == kingScore).forEach((player) => player.winningHands += 1); 
+    renderScoreBoards(kingScore);
   }
-  players[iCurrentPlayer].playing = false;
-  renderPlayer(players[iCurrentPlayer],iCurrentPlayer);
 }
 
-const winningScore = function () {
+const winningScore = () => {
   let score = 0;  
   let playerScore;
   players.forEach((player, index) => {
@@ -149,20 +165,24 @@ const winningScore = function () {
   return score;
 };
 
-function renderPlayer(player, index){
-  let boxPlayer = document.getElementById(player.name);
-  Object.values(boxPlayer.getElementsByTagName('button')).forEach((button) =>
+function renderPlayer(player){
+  const boxPlayer = document.getElementById(player.identifier);
+  const boxResult = document.getElementById(`result${player.identifier}`)
+  boxPlayer.querySelectorAll('button').forEach((button) =>
     button.disabled = !player.playing
   );
+  boxResult.innerHTML = '';
+  boxResult.className = '';
   let score = player.score();
   if (score > maxScore) {      
-    boxPlayer.getElementsByTagName('span')[0].innerHTML = `&#9760; Quedas fuera en esta mano ${score}`;
+    boxResult.innerHTML = `&#9760; Estás fuera con una puntuación de ${score}`;
+    boxResult.classList.add('out');
   }
   renderPlayerCards(player);  
 }
 
 function renderPlayerCards (player) {  
-  const boxPlayerCards = document.getElementById(player.name).lastChild;
+  const boxPlayerCards = document.getElementById(player.identifier).lastChild;
   boxPlayerCards.textContent = ''; 
   player.cards.forEach((card, iCard) => {    
     const imgCard = document.createElement('img');
@@ -180,6 +200,18 @@ function renderPlayerCards (player) {
   });
 }
 
-function renderScoreBoards() { 
-  players.forEach((player) => document.getElementById(`score${player.name}`).setAttribute('value',player.winningHands));
+function renderScoreBoards(kingScore) { 
+  let boxResult;   
+  players.filter((player) => player.score() < kingScore).forEach((player) => { 
+    boxResult = document.getElementById(`result${player.identifier}`);
+    boxResult.innerHTML = `Tu puntuación es de ${player.score()}`
+    boxResult.classList.add('loser');
+  });    
+  players.filter((player) => player.score() == kingScore).forEach((player) => { 
+    boxResult = document.getElementById(`result${player.identifier}`);
+    boxResult.innerHTML = `&#9819; Has ganado con una puntuación de ${player.score()}`
+    boxResult.classList.add('winner');
+  });
+  players.forEach((player) => document.getElementById(`score${player.identifier}`).setAttribute('value',player.winningHands));  
+  document.getElementById('new-hand').disabled = false;
 }

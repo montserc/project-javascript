@@ -20,17 +20,18 @@ export class Card {
 }
 
 export class Player {
-  constructor(name, playing) {
-    this.name = name;
+  constructor(identifier, playing) {
+    this.identifier = identifier;
+    //this.name = name;
     this.playing = playing;       
     this.cards = new Array();
     this.winningHands = 0;   
   }
-  /*
+  
   toString() {
-    return (`${this.name}`);
+    return (`Jugador ${this.identifier}`);
   }
-  */
+  
   score() {
     return this.cards.reduce((sum, card) => sum + card.value, 0);
   }
