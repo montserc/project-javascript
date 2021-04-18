@@ -25,12 +25,10 @@ export class Player {
     this.playing = playing;       
     this.cards = new Array();
     this.winningHands = 0;   
-  }
-  
+  }  
   toString() {
     return (`Jugador ${this.identifier}`);
   }
-  
   score() {
     return this.cards.reduce((sum, card) => sum + card.value, 0);
   }

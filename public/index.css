@@ -9,18 +9,18 @@ body {
 main {
   width: 50rem;
 }
+button, input {
+  text-align: center;
+  margin: .075rem;
+}
 p, li { 
   margin: 0;
   padding: .25rem;
-  color: #334;  
+  color: #334;    
 }
 ul {
   margin: 0rem;
   list-style: square outside none;
-}
-button, input {
-  text-align: center;
-  margin: .075rem;
 }
 section#rules {
   margin: .5rem 0;

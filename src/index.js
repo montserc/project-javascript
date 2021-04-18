@@ -39,9 +39,9 @@ function initDeck() {
 
 document.getElementById('init').addEventListener('click', function (event) {
   const input = document.getElementById('num-of-players');
-  const numOfPlayers = input.value;
+  const numOfPlayers = input.value.trim();
   let card;
-  if (numOfPlayers.trim()) {
+  if (numOfPlayers >= 2 && numOfPlayers <= 8) {
     initDeck();  
     players.length = 0;
     for (let i = 0; i < numOfPlayers; i++) {
@@ -113,11 +113,12 @@ function renderPlayers() {
     inputScoreboard.setAttribute('id', `score${player.identifier}`);
     inputScoreboard.setAttribute('type', 'text');
     inputScoreboard.setAttribute('size', '2');
+    inputScoreboard.setAttribute('readonly', 'true');
     const labelScoreboard = document.createElement('label');
     labelScoreboard.textContent = 'Marcador: ';
     labelScoreboard.append(inputScoreboard);    
     boxPlayer.append(labelScoreboard);
-    boxPlayer.append(document.createElement('div'));  //boxCards  
+    boxPlayer.append(document.createElement('div'));
     renderPlayerCards(player);
   });       
 }
@@ -135,7 +136,7 @@ const drawCard = (player, index) => () => {
   }
 };
 
-function stopDrawCard (currentPlayer, iCurrentPlayer) { 
+function stopDrawCard(currentPlayer, iCurrentPlayer) { 
   let iNextPlayer = iCurrentPlayer + 1;
   currentPlayer.playing = false;
   renderPlayer(currentPlayer);
@@ -146,6 +147,10 @@ function stopDrawCard (currentPlayer, iCurrentPlayer) {
     let kingScore = winningScore();
     players.filter((player) => player.score() == kingScore).forEach((player) => player.winningHands += 1); 
     renderScoreBoards(kingScore);
+    players.forEach((player) => {
+        player.cards.filter((card) => card.faceDown == true).forEach((card) => card.faceDown=false);
+        renderPlayerCards(player);
+    });      
   }
 }
 
@@ -177,7 +182,7 @@ function renderPlayer(player){
   renderPlayerCards(player);  
 }
 
-function renderPlayerCards (player) {  
+function renderPlayerCards(player) {  
   const boxPlayerCards = document.getElementById(player.identifier).lastChild;
   boxPlayerCards.textContent = ''; 
   player.cards.forEach((card, iCard) => {    
@@ -208,5 +213,7 @@ function renderScoreBoards(kingScore) {
     boxResult.innerHTML = `&#9819; Has ganado con una puntuación de ${player.score()}`
     boxResult.classList.add('winner');
   });
-  players.forEach((player) => document.getElementById(`score${player.identifier}`).setAttribute('value',player.winningHands));  
+  players.forEach((player) => { 
+    document.getElementById(`score${player.identifier}`).setAttribute('value',player.winningHands);       
+  });  
 }
