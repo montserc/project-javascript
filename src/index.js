@@ -25,7 +25,6 @@ let players;
 document.addEventListener('DOMContentLoaded',function() {  
   deck = new Array();
   players = new Array();
-  document.getElementById('new-hand').disabled = true;
 });
 
 function initDeck() {     
@@ -46,7 +45,6 @@ document.getElementById('init').addEventListener('click', function (event) {
     initDeck();  
     players.length = 0;
     for (let i = 0; i < numOfPlayers; i++) {
-      //players.push(new Player((i == numOfPlayers-1 ? 'La Banca' : `Jugador ${i+1}`), (i == 0 ? true : false)));
       players.push(new Player(i+1, (i == 0 ? true : false)));
       card = deck.pop();
       card.faceDown = !players[i].cards.some(playerCard => playerCard.faceDown == true);
@@ -59,18 +57,19 @@ document.getElementById('init').addEventListener('click', function (event) {
 });
 
 document.getElementById('new-hand').addEventListener('click', function (event) {
-  initDeck();    
-  let card;
-  for (let i = 0; i < players.length; i++) {
-    players[i].playing = (i == 0 ? true : false);
-    players[i].cards.length = 0;
-    card = deck.pop();
-    card.faceDown = !players[i].cards.some(playerCard => playerCard.faceDown == true);
-    players[i].cards.push(card);
-    renderPlayer(players[i]);
+  if (players.length > 0) {
+    initDeck();    
+    let card;
+    for (let i = 0; i < players.length; i++) {
+      players[i].playing = (i == 0 ? true : false);
+      players[i].cards.length = 0;
+      card = deck.pop();
+      card.faceDown = !players[i].cards.some(playerCard => playerCard.faceDown == true);
+      players[i].cards.push(card);
+      renderPlayer(players[i]);
+    }
+    renderDeck(); 
   }
-  renderDeck();
-  document.getElementById('new-hand').disabled = true;
 });
 
 function renderDeck() {
@@ -86,6 +85,7 @@ function renderDeck() {
 }
 
 function renderPlayers() {  
+  document.getElementById('rules').style.display = 'none';
   const boxPlayers = document.getElementById('players');  
   boxPlayers.textContent = '';
   players.forEach((player, index) => {
@@ -96,15 +96,11 @@ function renderPlayers() {
     boxPlayers.append(boxPlayer);
     const buttonDrawCard = document.createElement('button');
     buttonDrawCard.innerHTML = 'Pedir Carta';
-    //buttonDrawCard.addEventListener('click', drawCard(player, index));    
-    buttonDrawCard.addEventListener('click', function (event) {
-        drawCard(player, index);
-    });    
+    buttonDrawCard.addEventListener('click', drawCard(player, index));    
     buttonDrawCard.disabled = !player.playing;
     boxPlayer.append(buttonDrawCard);
     const buttonStopDrawCard = document.createElement('button');
     buttonStopDrawCard.innerHTML = 'Me planto';
-    //buttonStopDrawCard.addEventListener('click', stopDrawCard(player, index));        
     buttonStopDrawCard.addEventListener('click', function (event) {
       stopDrawCard(player, index);
     });
@@ -116,7 +112,7 @@ function renderPlayers() {
     const inputScoreboard = document.createElement('input'); 
     inputScoreboard.setAttribute('id', `score${player.identifier}`);
     inputScoreboard.setAttribute('type', 'text');
-    inputScoreboard.setAttribute('size', '3');
+    inputScoreboard.setAttribute('size', '2');
     const labelScoreboard = document.createElement('label');
     labelScoreboard.textContent = 'Marcador: ';
     labelScoreboard.append(inputScoreboard);    
@@ -126,7 +122,7 @@ function renderPlayers() {
   });       
 }
 
-function drawCard (player, index) {
+const drawCard = (player, index) => () => {
   let card = deck.pop();
   card.faceDown = !player.cards.some(playerCard => playerCard.faceDown == true);
   player.cards.push(card);
@@ -137,7 +133,7 @@ function drawCard (player, index) {
     renderDeck();    
     renderPlayer(player);  
   }
-}
+};
 
 function stopDrawCard (currentPlayer, iCurrentPlayer) { 
   let iNextPlayer = iCurrentPlayer + 1;
@@ -213,5 +209,4 @@ function renderScoreBoards(kingScore) {
     boxResult.classList.add('winner');
   });
   players.forEach((player) => document.getElementById(`score${player.identifier}`).setAttribute('value',player.winningHands));  
-  document.getElementById('new-hand').disabled = false;
 }

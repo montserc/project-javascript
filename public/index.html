@@ -14,13 +14,21 @@
     <main>      
       <h2>Siete y Medio</h2>
       <section id="controls">        
-        <!--<a href="#0" class="a-button">Reglas &#10094;&#10094;</a>-->        
         <label>Jugadores: <input id="num-of-players" type="number" min="2" max="8"></label>
         <button id="init">Iniciar</button>
         <button id="new-hand">Otra Mano</button>
-        <button id="rules">Reglas</button>
-        <div>Bla Bla...</div>
       </section>
+      <section id="rules">
+        <p>El objetivo del juego es acercarse lo más posible a sumar siete y medio con la carta de la mano y las que se van pidiendo. Todas las cartas valen en puntos la indicada en su carta a excepción de las figuras que valen medio punto.</p>
+        <ul>
+          <li>Inicialmente, cada jugador recibira una carta boca abajo.</li>
+          <li>La carta que se recibe se pude clicar para girar boca arriba y boca abajo.</li>
+          <li>El jugador, según la carta inicial recibida, decidirá plantarse o pedir más cartas del mazo.</li>
+          <li>El jugador sólo puede tener una carta boca abajo, así que si pide otra carta, se entregará descubierta si tiene alguna carta boca abajo o cubierta si todas estan boca arriba.</li>
+          <li>Si el jugador tiene una carta anterior boca abajo y quisiera recibir la siguiente cubierta, debará girar la anterior.</li>
+        </ul>
+        <p>Cada jugador dispone de un marcador de manos ganadas. Una vez finalizada la mano, se podrá decidir continuar con una nueva ronda (botón "Otra Mano") o iniciar la partida con nuevos jugadores.</p>
+      </section>      
       <section id="deck"></section>
       <section id="players"></section>
     </main>

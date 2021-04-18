@@ -22,7 +22,6 @@ export class Card {
 export class Player {
   constructor(identifier, playing) {
     this.identifier = identifier;
-    //this.name = name;
     this.playing = playing;       
     this.cards = new Array();
     this.winningHands = 0;   

@@ -1,44 +1,43 @@
-body, button {
-  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  /*margin: 2rem;*/
+body, button, input {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;  
+  font-size: 1rem;
 }
 body {
+  color: #005577;
   margin: 2rem;
 } 
 main {
   width: 50rem;
 }
+p, li { 
+  margin: 0;
+  padding: .25rem;
+  color: #334;  
+}
+ul {
+  margin: 0rem;
+  list-style: square outside none;
+}
 button, input {
-  font-size: medium;
   text-align: center;
   margin: .075rem;
 }
-section#controls > div { /*es per les regles del joc*/
-  padding: .2rem .5rem;
-  margin: .4rem 0;
-  border: 1px solid #0072CE;  
+section#rules {
+  margin: .5rem 0;
+  background: lightyellow;
+  border: 1px solid yellow;
+  padding: .5rem;
 }
 section#deck { 
   position: relative;
   min-height: 6.5rem;
-  /*
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  align-items: stretch;
-  */
-  /*border: 1px solid blue;*/
+  margin: .5rem 0;
 }
-  
 img.card {
   width: 4rem;
   height: 6rem;
-  /*margin: 0 .5rem .5rem 0;*/
   margin: .25rem;
-  /*padding: .25rem;*/
 }
-
 section#deck > img.card { 
   position: absolute; 
 }
@@ -48,7 +47,6 @@ section#players {
   justify-content: flex-start;
   flex-wrap: wrap;
   align-items: stretch;
-  /*border: 1px solid red;*/
 }
 div.player {
   min-width: 50rem;
@@ -67,22 +65,21 @@ div.player > div {
   align-items: stretch;
   min-width: 50rem;
   min-height: 6.5rem;  
-  /*border: 1px solid green;*/
   background-image: url(/dist/img/tapete.jpg);
   background-position: center;
 }
 div.player > span { 
   margin: 0rem 0rem .5rem .5rem;
-  font-size: bold;
 }
 div.player > span.out { 
   color: red;
 }
 div.player > span.loser { 
-  color: black;
+  color: #005577;
 }
-div.player > span.winner { 
+div.player > span.winner {   
   color: green;
+  font-weight: bold;
 }
 div.player > label { 
   float: right;
