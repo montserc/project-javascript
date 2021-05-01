@@ -101,9 +101,7 @@ function renderPlayers() {
     boxPlayer.append(buttonDrawCard);
     const buttonStopDrawCard = document.createElement('button');
     buttonStopDrawCard.innerHTML = 'Me planto';
-    buttonStopDrawCard.addEventListener('click', function (event) {
-      stopDrawCard(player, index);
-    });
+    buttonStopDrawCard.addEventListener('click', stopDrawCard(player, index));    
     buttonStopDrawCard.disabled = !player.playing;
     boxPlayer.append(buttonStopDrawCard);
     const spanResult = document.createElement('span'); 
@@ -129,14 +127,15 @@ const drawCard = (player, index) => () => {
   player.cards.push(card);
   if (player.score() > maxScore) {
     player.cards.forEach(card => card.faceDown=false);
-    stopDrawCard(player, index);
+    const myStopDrawCard = stopDrawCard(player, index);
+    myStopDrawCard();
   } else {
     renderDeck();    
     renderPlayer(player);  
   }
 };
 
-function stopDrawCard(currentPlayer, iCurrentPlayer) { 
+const stopDrawCard = (currentPlayer, iCurrentPlayer) => () => { 
   let iNextPlayer = iCurrentPlayer + 1;
   currentPlayer.playing = false;
   renderPlayer(currentPlayer);
@@ -152,7 +151,7 @@ function stopDrawCard(currentPlayer, iCurrentPlayer) {
         renderPlayerCards(player);
     });      
   }
-}
+};
 
 const winningScore = () => {
   let score = 0;  
